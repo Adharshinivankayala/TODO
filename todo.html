@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        .bg-todo-container {
+            background-color: #056d75;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .todo-heading {
+            text-align: center;
+            font-family: "Roboto";
+            font-size: 46px;
+            font-weight: 500;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .create-task-heading {
+            text-align: left;
+            font-size: 35px;
+            color: white;
+        }
+
+        .todo-user-input {
+            background-color: white;
+            width: 90%;
+            border: 1px solid #e4e7eb;
+            border-radius: 5px;
+            margin-top: 10px;
+            padding: 10px;
+        }
+
+        .button {
+            color: black;
+            background-color: #f0f3f4;
+            font-family: "Roboto";
+            font-size: 18px;
+            border: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .todo-item-heading {
+            font-size: 30px;
+            font-weight: 500;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .todo-item-container {
+            margin-top: 15px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .todo-item-container li {
+            background-color: #ffffff;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .checkbox-label {
+            font-family: "Roboto";
+            font-size: 16px;
+            flex-grow: 1;
+        }
+
+        .delete-icon-container {
+            cursor: pointer;
+        }
+
+        .delete-icon {
+            color: #dc3545;
+            font-size: 20px;
+        }
+
+        .delete-icon:hover {
+            color: #c82333;
+        }
+
+        .checked {
+            text-decoration: line-through;
+            color: grey;
+        }
+    </style>
+<link rel="stylesheet" href="index.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" >
+<meta name="robots" content="none,noarchive"/>
+</head>
+
+<body>
+    <div class="bg-todo-container">
+        <div class="container">
+            <h1 class="todo-heading"><b>Todos</b></h1>
+            <h2 class="create-task-heading">Create Task</h2>
+            <center>
+                <input type="text" id="todouserinput" class="todo-user-input" placeholder="What's need to be done..!!" />
+            </center>
+            <button class="button" id="addtodobutton">Add</button>
+            <h2 class="todo-item-heading">MY TASKS</h2>
+            <ul class="todo-item-container" id="todoitemcontainer"></ul>
+        </div>
+    </div>
+
+    <script>
+        let todoitemcontainer = document.getElementById("todoitemcontainer");
+        let addtodobutton = document.getElementById("addtodobutton");
+
+        let todoList = [{
+                text: "Learn HTML",
+                uniqueNo: 1
+            },
+            {
+                text: "Learn CSS",
+                uniqueNo: 2
+            },
+            {
+                text: "Learn JavaScript",
+                uniqueNo: 3
+            },
+        ];
+        let todocount = todoList.length;
+
+        function ontodostatuschange(checkboxid, labelid) {
+            let checkbox = document.getElementById(checkboxid);
+            let label = document.getElementById(labelid);
+            label.classList.toggle("checked");
+        }
+
+        function ondelete(todoid) {
+            let todoelement = document.getElementById(todoid);
+            todoitemcontainer.removeChild(todoelement);
+        }
+
+        function createandappend(todo) {
+            let todoid = "todo" + todo.uniqueNo;
+            let checkboxid = "checkbox" + todo.uniqueNo;
+            let labelid = "label" + todo.uniqueNo;
+
+            let todoelement = document.createElement("li");
+            todoelement.id = todoid;
+            todoitemcontainer.appendChild(todoelement);
+
+            let inputelement = document.createElement("input");
+            inputelement.type = "checkbox";
+            inputelement.id = checkboxid;
+            inputelement.classList.add("checkbox-input");
+            inputelement.onclick = function() {
+                ontodostatuschange(checkboxid, labelid);
+            };
+            todoelement.appendChild(inputelement);
+
+            let labelelement = document.createElement("label");
+            labelelement.setAttribute("for", checkboxid);
+            labelelement.id = labelid;
+            labelelement.classList.add("checkbox-label");
+            labelelement.textContent = todo.text;
+            todoelement.appendChild(labelelement);
+
+            let deliconcontainer = document.createElement("div");
+            deliconcontainer.classList.add("delete-icon-container");
+            todoelement.appendChild(deliconcontainer);
+
+            let delicon = document.createElement("i"); // Use <i> for icons
+            delicon.classList.add("fas", "fa-trash-alt", "delete-icon"); // Font Awesome class
+            delicon.onclick = function() {
+                ondelete(todoid);
+            };
+            deliconcontainer.appendChild(delicon);
+        }
+
+        for (let todo of todoList) {
+            createandappend(todo);
+        }
+
+        function onaddtodo() {
+            let userinputelement = document.getElementById("todouserinput");
+            let uservalue = userinputelement.value;
+            if (uservalue === "") {
+                alert("Please enter text!");
+                return;
+            }
+            todocount++;
+
+            let newtodo = {
+                text: uservalue,
+                uniqueNo: todocount,
+            };
+            createandappend(newtodo);
+            userinputelement.value = "";
+        }
+
+        addtodobutton.onclick = function() {
+            onaddtodo();
+        };
+    </script>
+<script src="index.js"></script>
+</body>
+
+</html>
